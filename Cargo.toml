@@ -40,5 +40,14 @@ sp-runtime = "2.0.1"
 pallet-indices = "2.0.1"
 pallet-im-online = "2.0.1"
 
+# actual metadata types
+frame-metadata = { package = "frame-metadata", git = "https://github.com/paritytech/frame-metadata", branch = "subsee", features = ["v12", "v13", "v14", "std"] }
+# make the request to a substrate node to get the metadata
+ureq = { version = "2.0.1", features = ["json"] }
+# colourful error reports
+color-eyre = "0.5.11"
+# for decoding bytes into the metadata types
+scale = { package = "parity-scale-codec", version = "2.0.0", default-features = false }
+
 [features]
 default = ["sc-cli"]

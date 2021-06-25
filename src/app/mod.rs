@@ -5,19 +5,23 @@ pub mod system;
 pub mod xassets;
 pub mod xmining_asset;
 pub mod xstaking;
+pub mod meta;
 
 use anyhow::{anyhow, Result};
 use sp_core::Pair;
 use sp_keyring::AccountKeyring;
 use structopt::{clap::arg_enum, StructOpt};
 use subxt::PairSigner;
-
 use crate::runtime::ChainXSigner;
 
 #[derive(StructOpt, Debug)]
 pub enum Cmd {
     Balances(balances::Balances),
     Session(session::Session),
+
+    #[structopt(name = "meta", about = "An tool for inspecting substrate metadata")]
+    Meta(meta::Meta),
+
     Sudo(sudo::Sudo),
     System(system::System),
 
@@ -91,8 +95,8 @@ pub struct App {
 
 fn as_sr25519_signer(uri: &str) -> Result<ChainXSigner> {
     sp_core::sr25519::Pair::from_phrase(&uri, None)
-        .map(|(pair, _seed)| PairSigner::new(pair))
-        .map_err(|err| anyhow!("Failed to generate sr25519 Pair from uri: {:?}", err))
+    .map(|(pair, _seed)| PairSigner::new(pair))
+    .map_err(|err| anyhow!("Failed to generate sr25519 Pair from uri(): {:?}", err))
 }
 
 impl App {
@@ -112,6 +116,7 @@ impl App {
         match self.command {
             Cmd::Balances(balances) => balances.run(self.url, signer).await?,
             Cmd::Session(session) => session.run(self.url, signer).await?,
+            Cmd::Meta(meta) => meta.run().await?,
             Cmd::Sudo(sudo) => sudo.run(self.url, signer).await?,
             Cmd::System(system) => system.run(self.url, signer).await?,
             Cmd::XAssets(xassets) => xassets.run(self.url, signer).await?,
